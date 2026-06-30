@@ -1,0 +1,1595 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>SLO Watch - SLA Compliance Analyser</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  /* ---- Reset + tokens ---- */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg:        #f7f8f6;
+    --surface:   #ffffff;
+    --surface2:  #f0f2ef;
+    --border:    #dde0da;
+    --accent:    #0f5f54;
+    --accent2:   #0a4840;
+    --accent-lt: #e4f0ee;
+    --sienna:    #b85c38;
+    --sienna-lt: #faf0eb;
+    --text:      #1a1f1d;
+    --text2:     #4a5450;
+    --text3:     #7a8680;
+    --mono:      "IBM Plex Mono", monospace;
+    --sans:      "Manrope", sans-serif;
+    --radius:    8px;
+    --shadow:    0 1px 4px rgba(0,0,0,.08);
+    --shadow-md: 0 2px 12px rgba(0,0,0,.10);
+  }
+
+  html { font-size: 16px; scroll-behavior: smooth; }
+  body {
+    font-family: var(--sans);
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    * { transition: none !important; animation: none !important; }
+  }
+
+  /* ---- Focus ---- */
+  :focus-visible {
+    outline: 2.5px solid var(--accent);
+    outline-offset: 2px;
+  }
+
+  /* ---- Nav ---- */
+  .nav {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: var(--accent);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 1.5rem;
+    height: 52px;
+    box-shadow: 0 2px 8px rgba(0,0,0,.18);
+  }
+  .nav-brand {
+    font-weight: 800;
+    font-size: 1.05rem;
+    letter-spacing: -.01em;
+    color: #fff;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+  }
+  .nav-brand-tag {
+    font-family: var(--mono);
+    font-size: .7rem;
+    background: rgba(255,255,255,.18);
+    border-radius: 4px;
+    padding: 1px 6px;
+    font-weight: 400;
+    letter-spacing: .02em;
+  }
+  .nav-links {
+    display: flex;
+    gap: .25rem;
+    list-style: none;
+  }
+  .nav-links a {
+    color: rgba(255,255,255,.82);
+    text-decoration: none;
+    font-size: .875rem;
+    font-weight: 600;
+    padding: .35rem .75rem;
+    border-radius: 6px;
+    transition: background .15s, color .15s;
+  }
+  .nav-links a:hover, .nav-links a.active {
+    background: rgba(255,255,255,.2);
+    color: #fff;
+  }
+  .nav-hamburger {
+    display: none;
+    background: none;
+    border: 1.5px solid rgba(255,255,255,.5);
+    border-radius: 6px;
+    color: #fff;
+    padding: .3rem .55rem;
+    font-size: 1.1rem;
+    cursor: pointer;
+    line-height: 1;
+  }
+  @media (max-width: 700px) {
+    .nav-links { display: none; position: absolute; top: 52px; left: 0; right: 0; background: var(--accent2); flex-direction: column; padding: .5rem; gap: 0; }
+    .nav-links.open { display: flex; }
+    .nav-hamburger { display: block; }
+  }
+
+  /* ---- Main layout ---- */
+  .main { max-width: 1060px; margin: 0 auto; padding: 2rem 1.25rem 4rem; }
+  .view { display: none; }
+  .view.active { display: block; }
+
+  /* ---- Section heads ---- */
+  .section-title {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--text);
+    margin-bottom: 1.5rem;
+    letter-spacing: -.02em;
+  }
+  .section-title span {
+    color: var(--accent);
+  }
+
+  /* ---- Cards ---- */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.25rem 1.5rem;
+    box-shadow: var(--shadow);
+    margin-bottom: 1.5rem;
+  }
+  .card-title {
+    font-size: .8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    color: var(--text3);
+    margin-bottom: .75rem;
+  }
+
+  /* ---- Input area ---- */
+  .input-row {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    margin-bottom: 1rem;
+  }
+  .input-group {
+    display: flex;
+    flex-direction: column;
+    gap: .35rem;
+    flex: 1 1 220px;
+  }
+  label {
+    font-size: .82rem;
+    font-weight: 600;
+    color: var(--text2);
+  }
+  textarea {
+    font-family: var(--mono);
+    font-size: .78rem;
+    padding: .65rem .85rem;
+    background: var(--surface2);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius);
+    color: var(--text);
+    resize: vertical;
+    min-height: 140px;
+    width: 100%;
+    transition: border-color .15s;
+  }
+  textarea:focus { border-color: var(--accent); background: #fff; }
+
+  input[type="file"] {
+    font-size: .82rem;
+    color: var(--text2);
+    background: var(--surface2);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius);
+    padding: .5rem .75rem;
+    cursor: pointer;
+    width: 100%;
+  }
+
+  /* ---- SLA table ---- */
+  .sla-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: .875rem;
+    margin-bottom: .25rem;
+  }
+  .sla-table th {
+    font-size: .75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    color: var(--text3);
+    padding: .4rem .75rem;
+    text-align: left;
+    border-bottom: 1.5px solid var(--border);
+  }
+  .sla-table td {
+    padding: .45rem .75rem;
+    border-bottom: 1px solid var(--surface2);
+    vertical-align: middle;
+  }
+  .sla-table input[type="number"] {
+    font-family: var(--mono);
+    font-size: .9rem;
+    width: 80px;
+    padding: .3rem .5rem;
+    border: 1.5px solid var(--border);
+    border-radius: 5px;
+    background: var(--surface2);
+    color: var(--text);
+  }
+  .sla-table input[type="number"]:focus {
+    border-color: var(--accent);
+    background: #fff;
+  }
+  .p1-badge { color: #c0392b; font-weight: 700; font-family: var(--mono); font-size: .85rem; }
+  .p2-badge { color: #d68910; font-weight: 700; font-family: var(--mono); font-size: .85rem; }
+  .p3-badge { color: var(--accent); font-weight: 700; font-family: var(--mono); font-size: .85rem; }
+
+  /* ---- Buttons ---- */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: .4rem;
+    font-family: var(--sans);
+    font-weight: 700;
+    font-size: .875rem;
+    padding: .55rem 1.1rem;
+    border-radius: 7px;
+    cursor: pointer;
+    transition: background .15s, box-shadow .15s, transform .1s;
+    border: none;
+    text-decoration: none;
+  }
+  .btn:active { transform: scale(.97); }
+  .btn-primary {
+    background: var(--accent);
+    color: #fff;
+  }
+  .btn-primary:hover { background: var(--accent2); box-shadow: 0 2px 8px rgba(15,95,84,.25); }
+  .btn-secondary {
+    background: var(--surface2);
+    color: var(--text);
+    border: 1.5px solid var(--border);
+  }
+  .btn-secondary:hover { background: var(--accent-lt); border-color: var(--accent); }
+  .btn-sienna {
+    background: var(--sienna);
+    color: #fff;
+  }
+  .btn-sienna:hover { background: #9c4e30; }
+  .btn-sm {
+    font-size: .78rem;
+    padding: .35rem .75rem;
+    border-radius: 5px;
+  }
+  .btn-group {
+    display: flex;
+    gap: .65rem;
+    flex-wrap: wrap;
+    align-items: center;
+    margin-top: 1rem;
+  }
+
+  /* ---- Alert / note ---- */
+  .note {
+    font-size: .78rem;
+    color: var(--text3);
+    font-style: italic;
+    margin-top: .5rem;
+  }
+  .alert {
+    padding: .65rem 1rem;
+    border-radius: 6px;
+    font-size: .85rem;
+    margin-bottom: 1rem;
+  }
+  .alert-warn {
+    background: #fff8e1;
+    border: 1px solid #ffd54f;
+    color: #7a5a00;
+  }
+  .alert-info {
+    background: var(--accent-lt);
+    border: 1px solid #9ecbc3;
+    color: var(--accent2);
+  }
+  .alert-err {
+    background: #fdecea;
+    border: 1px solid #f5c6c6;
+    color: #9b1b1b;
+  }
+
+  /* ---- Dashboard ---- */
+  #dashboard { display: none; }
+  #dashboard.visible { display: block; }
+
+  .big-metric {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    background: var(--accent);
+    color: #fff;
+    border-radius: 12px;
+    padding: 1.25rem 2rem;
+    min-width: 160px;
+    margin-bottom: .5rem;
+  }
+  .big-metric-num {
+    font-family: var(--mono);
+    font-size: 2.6rem;
+    font-weight: 500;
+    line-height: 1.1;
+  }
+  .big-metric-label {
+    font-size: .72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .1em;
+    opacity: .8;
+    margin-top: .2rem;
+  }
+
+  .kpi-row {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-bottom: 1.5rem;
+  }
+  .kpi-card {
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    padding: 1rem 1.25rem;
+    flex: 1 1 160px;
+    box-shadow: var(--shadow);
+  }
+  .kpi-card-label {
+    font-size: .72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    color: var(--text3);
+    margin-bottom: .3rem;
+  }
+  .kpi-card-val {
+    font-family: var(--mono);
+    font-size: 1.6rem;
+    font-weight: 500;
+    color: var(--text);
+  }
+  .kpi-card-sub {
+    font-size: .75rem;
+    color: var(--text3);
+    margin-top: .15rem;
+  }
+  .kpi-good { border-top: 3px solid var(--accent); }
+  .kpi-warn { border-top: 3px solid #e6ac00; }
+  .kpi-bad  { border-top: 3px solid var(--sienna); }
+
+  /* ---- MTTR bars ---- */
+  .bar-chart { width: 100%; }
+  .bar-row {
+    display: grid;
+    grid-template-columns: 130px 1fr 60px;
+    align-items: center;
+    gap: .5rem;
+    margin-bottom: .5rem;
+    font-size: .82rem;
+  }
+  .bar-label {
+    font-weight: 600;
+    color: var(--text2);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .bar-track {
+    background: var(--surface2);
+    border-radius: 4px;
+    height: 18px;
+    overflow: hidden;
+  }
+  .bar-fill {
+    height: 100%;
+    background: var(--accent);
+    border-radius: 4px;
+    transition: width .4s ease;
+  }
+  .bar-val {
+    font-family: var(--mono);
+    font-size: .78rem;
+    color: var(--text2);
+    text-align: right;
+  }
+
+  /* ---- Repeat incidents table ---- */
+  .data-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: .85rem;
+  }
+  .data-table th {
+    font-size: .72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .07em;
+    color: var(--text3);
+    padding: .45rem .75rem;
+    text-align: left;
+    border-bottom: 1.5px solid var(--border);
+    background: var(--surface2);
+  }
+  .data-table td {
+    padding: .45rem .75rem;
+    border-bottom: 1px solid var(--surface2);
+    vertical-align: middle;
+  }
+  .data-table tr:last-child td { border-bottom: none; }
+  .data-table tr:hover td { background: var(--accent-lt); }
+  .flag-top {
+    display: inline-block;
+    font-size: .68rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    background: var(--sienna-lt);
+    color: var(--sienna);
+    border: 1px solid #e8b09a;
+    border-radius: 4px;
+    padding: 1px 5px;
+    margin-left: .35rem;
+  }
+  td.mono { font-family: var(--mono); font-size: .82rem; }
+
+  /* ---- Per-priority compliance ---- */
+  .priority-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+  .pcomp-card {
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    padding: 1rem 1.25rem;
+    box-shadow: var(--shadow);
+  }
+  .pcomp-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: .5rem;
+  }
+  .pcomp-bar-track {
+    background: var(--surface2);
+    border-radius: 6px;
+    height: 10px;
+    overflow: hidden;
+  }
+  .pcomp-bar-fill {
+    height: 100%;
+    border-radius: 6px;
+    transition: width .4s;
+  }
+  .pcomp-sub {
+    font-size: .72rem;
+    color: var(--text3);
+    margin-top: .35rem;
+  }
+
+  /* ---- Per-category compliance table ---- */
+  .cat-comp-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: .83rem;
+  }
+  .cat-comp-table th {
+    font-size: .71rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .07em;
+    color: var(--text3);
+    padding: .4rem .7rem;
+    border-bottom: 1.5px solid var(--border);
+    background: var(--surface2);
+    text-align: left;
+  }
+  .cat-comp-table td {
+    padding: .4rem .7rem;
+    border-bottom: 1px solid var(--surface2);
+  }
+  .cat-comp-table tr:hover td { background: var(--accent-lt); }
+  .compliance-pill {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: .78rem;
+    font-weight: 500;
+    padding: 2px 8px;
+    border-radius: 20px;
+  }
+  .pill-good { background: #d4edda; color: #1a5c30; }
+  .pill-warn { background: #fff3cd; color: #7a5a00; }
+  .pill-bad  { background: #fdecea; color: #9b1b1b; }
+
+  /* ---- Heatmap ---- */
+  .heatmap-wrap { overflow-x: auto; }
+  .heatmap-grid {
+    display: grid;
+    grid-template-columns: 36px repeat(24, 22px);
+    grid-template-rows: 22px repeat(7, 22px);
+    gap: 2px;
+    min-width: 600px;
+    margin-bottom: .5rem;
+  }
+  .hm-cell {
+    border-radius: 3px;
+    background: var(--surface2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .hm-label-row { font-size: .62rem; font-family: var(--mono); color: var(--text3); font-weight: 500; }
+  .hm-label-day { font-size: .62rem; font-family: var(--mono); color: var(--text3); font-weight: 600; display: flex; align-items: center; justify-content: center; }
+  .hm-corner   { background: transparent; }
+  .hm-data {
+    cursor: default;
+    transition: transform .1s;
+  }
+  .hm-data:hover { transform: scale(1.3); z-index: 2; position: relative; }
+  .heatmap-legend {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    font-size: .72rem;
+    color: var(--text3);
+    margin-top: .5rem;
+    font-family: var(--mono);
+  }
+  .legend-swatch {
+    width: 12px;
+    height: 12px;
+    border-radius: 2px;
+    display: inline-block;
+  }
+
+  /* ---- AI Summary ---- */
+  .ai-controls {
+    display: flex;
+    gap: .75rem;
+    flex-wrap: wrap;
+    align-items: center;
+    margin-bottom: 1rem;
+  }
+  .ai-controls select {
+    font-family: var(--sans);
+    font-size: .82rem;
+    padding: .45rem .65rem;
+    border: 1.5px solid var(--border);
+    border-radius: 6px;
+    background: var(--surface2);
+    color: var(--text);
+  }
+  #ai-output {
+    display: none;
+    background: var(--surface2);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1rem 1.25rem;
+    margin-top: 1rem;
+  }
+  #ai-output.visible { display: block; }
+  #ai-summary-text {
+    font-size: .9rem;
+    line-height: 1.7;
+    color: var(--text);
+    margin-bottom: .5rem;
+  }
+  #ai-receipt {
+    font-family: var(--mono);
+    font-size: .7rem;
+    color: var(--text3);
+  }
+
+  /* ---- Export row ---- */
+  .export-row {
+    display: flex;
+    gap: .65rem;
+    flex-wrap: wrap;
+    margin-top: 1rem;
+  }
+
+  /* ---- Reference view ---- */
+  .ref-section { margin-bottom: 2rem; }
+  .ref-section h3 {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--accent);
+    margin-bottom: .5rem;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: .35rem;
+  }
+  .ref-section p, .ref-section li {
+    font-size: .88rem;
+    color: var(--text2);
+    margin-bottom: .35rem;
+    line-height: 1.7;
+  }
+  .ref-section ul { padding-left: 1.4rem; }
+  code {
+    font-family: var(--mono);
+    font-size: .82em;
+    background: var(--surface2);
+    padding: 1px 5px;
+    border-radius: 3px;
+  }
+
+  /* ---- Spinner ---- */
+  .spinner {
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    border: 2px solid rgba(255,255,255,.35);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: spin .6s linear infinite;
+    vertical-align: middle;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ---- Responsive ---- */
+  @media (max-width: 600px) {
+    .main { padding: 1.25rem .75rem 3rem; }
+    .big-metric-num { font-size: 2rem; }
+    .bar-row { grid-template-columns: 90px 1fr 50px; }
+  }
+  @media (max-width: 380px) {
+    .bar-row { grid-template-columns: 72px 1fr 44px; }
+    .kpi-card-val { font-size: 1.3rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Nav -->
+<nav class="nav" aria-label="Main navigation">
+  <a href="#" class="nav-brand" aria-label="SLO Watch home">
+    SLO Watch
+    <span class="nav-brand-tag">v1</span>
+  </a>
+  <button class="nav-hamburger" id="nav-toggle" aria-label="Toggle menu" aria-expanded="false">&#9776;</button>
+  <ul class="nav-links" id="nav-links" role="list">
+    <li><a href="#" data-view="analyse" class="active">Analyse</a></li>
+    <li><a href="#" data-view="reference">Reference</a></li>
+  </ul>
+</nav>
+
+<main class="main">
+
+  <!-- Analyse view -->
+  <section class="view active" id="view-analyse" aria-label="Analyse">
+    <h1 class="section-title"><span>Analyse</span> SLA Compliance</h1>
+
+    <div class="card">
+      <div class="card-title">Import ticket data</div>
+      <div class="input-row">
+        <div class="input-group" style="flex:2 1 340px">
+          <label for="csv-paste">Paste CSV</label>
+          <textarea id="csv-paste" rows="7" placeholder="id,created,resolved,priority,category,store&#10;1,2026-06-22 08:05,2026-06-22 09:30,P2,POS,STORE-01" aria-label="Paste CSV data here"></textarea>
+        </div>
+        <div class="input-group" style="flex:1 1 200px; justify-content: flex-start; gap:.75rem">
+          <label for="csv-file">Upload .csv file</label>
+          <input type="file" id="csv-file" accept=".csv,text/csv" aria-label="Upload a CSV file" />
+          <button class="btn btn-secondary" id="btn-sample">Load sample data</button>
+          <p class="note">Columns: id, created, resolved, priority, category, store.<br>Open tickets (blank resolved) are excluded from SLA and MTTR.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">SLA targets (hours)</div>
+      <table class="sla-table" aria-label="SLA target configuration">
+        <thead>
+          <tr>
+            <th scope="col">Priority</th>
+            <th scope="col">Target (hours)</th>
+            <th scope="col">Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="p1-badge">P1</span></td>
+            <td><input type="number" id="sla-p1" value="4" min="0.5" step="0.5" aria-label="P1 SLA target in hours" /></td>
+            <td style="font-size:.82rem;color:var(--text3)">Critical / service down</td>
+          </tr>
+          <tr>
+            <td><span class="p2-badge">P2</span></td>
+            <td><input type="number" id="sla-p2" value="8" min="0.5" step="0.5" aria-label="P2 SLA target in hours" /></td>
+            <td style="font-size:.82rem;color:var(--text3)">High impact / degraded</td>
+          </tr>
+          <tr>
+            <td><span class="p3-badge">P3</span></td>
+            <td><input type="number" id="sla-p3" value="24" min="0.5" step="0.5" aria-label="P3 SLA target in hours" /></td>
+            <td style="font-size:.82rem;color:var(--text3)">Standard / low impact</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="btn-group">
+      <button class="btn btn-primary" id="btn-analyse">Analyse</button>
+    </div>
+
+    <div id="parse-status" style="margin-top:.75rem" aria-live="polite"></div>
+
+    <!-- Dashboard -->
+    <div id="dashboard" aria-label="Analysis dashboard">
+      <div style="margin-top:2rem;margin-bottom:1rem;display:flex;align-items:flex-end;gap:1.5rem;flex-wrap:wrap">
+        <div class="big-metric" id="overall-compliance-box">
+          <span class="big-metric-num" id="overall-compliance-num">--</span>
+          <span class="big-metric-label">Overall SLA compliance</span>
+        </div>
+        <div>
+          <p id="open-tickets-note" class="note" style="max-width:280px"></p>
+          <p class="note" style="margin-top:.35rem">Computed from your CSV, not generated.</p>
+        </div>
+      </div>
+
+      <!-- Per-priority compliance -->
+      <div class="card">
+        <div class="card-title">Per-priority compliance</div>
+        <div class="priority-grid" id="priority-grid"></div>
+      </div>
+
+      <!-- Per-category compliance -->
+      <div class="card">
+        <div class="card-title">Per-category compliance</div>
+        <div style="overflow-x:auto">
+          <table class="cat-comp-table" id="cat-comp-table" aria-label="Per-category compliance">
+            <thead><tr><th>Category</th><th>Tickets (resolved)</th><th>Met SLA</th><th>Compliance</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- MTTR -->
+      <div class="card">
+        <div class="card-title">MTTR by category (hours)</div>
+        <div class="bar-chart" id="mttr-bars"></div>
+        <div class="kpi-row" style="margin-top:1rem" id="mttr-overall-row"></div>
+      </div>
+
+      <!-- Repeat incidents -->
+      <div class="card">
+        <div class="card-title">Repeat incidents by category</div>
+        <div style="overflow-x:auto">
+          <table class="data-table" id="repeat-table" aria-label="Repeat incidents">
+            <thead>
+              <tr>
+                <th>Category</th>
+                <th>Ticket count</th>
+                <th>Cumulative res. hours</th>
+                <th>Flag</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Heatmap -->
+      <div class="card">
+        <div class="card-title">Creation heatmap (day of week vs hour of day)</div>
+        <div class="heatmap-wrap">
+          <div class="heatmap-grid" id="heatmap-grid" aria-label="Ticket creation heatmap" role="img"></div>
+        </div>
+        <div class="heatmap-legend" id="heatmap-legend"></div>
+        <p class="note" style="margin-top:.5rem">Cells show count of tickets created. Deeper colour = more tickets. Hover for count.</p>
+      </div>
+
+      <!-- AI summary -->
+      <div class="card">
+        <div class="card-title">Executive summary</div>
+        <div class="ai-controls">
+          <label for="model-select" style="font-size:.82rem;font-weight:600;color:var(--text2)">Model:</label>
+          <select id="model-select" aria-label="AI model selection">
+            <option value="flash">DeepSeek Flash (fast)</option>
+            <option value="pro">DeepSeek Pro</option>
+            <option value="minimax">MiniMax M3</option>
+          </select>
+          <button class="btn btn-sienna" id="btn-ai">Write exec summary (AI)</button>
+        </div>
+        <div id="ai-output" role="region" aria-label="AI executive summary">
+          <div id="ai-summary-text"></div>
+          <div id="ai-receipt"></div>
+        </div>
+        <div class="export-row">
+          <button class="btn btn-secondary btn-sm" id="btn-export-json">Download metrics (JSON)</button>
+          <button class="btn btn-secondary btn-sm" id="btn-copy-summary">Copy summary</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Reference view -->
+  <section class="view" id="view-reference" aria-label="Reference">
+    <h1 class="section-title"><span>Reference</span></h1>
+    <div class="ref-section">
+      <h3>CSV format</h3>
+      <p>The analyser expects a header row followed by one ticket per row. Column names are matched case-insensitively.</p>
+      <ul>
+        <li><code>id</code> - ticket identifier (any string)</li>
+        <li><code>created</code> or <code>opened</code> or <code>created_at</code> - creation datetime</li>
+        <li><code>resolved</code> or <code>closed</code> or <code>resolved_at</code> - resolution datetime (blank for open tickets)</li>
+        <li><code>priority</code> - P1, P2, or P3</li>
+        <li><code>category</code> - e.g. POS, Network, Email, Hardware, Access</li>
+        <li><code>store</code> - store or site identifier</li>
+      </ul>
+      <p>Datetime format: <code>YYYY-MM-DD HH:MM</code> or ISO 8601. Quoted fields containing commas are handled correctly.</p>
+    </div>
+    <div class="ref-section">
+      <h3>Computed metrics</h3>
+      <ul>
+        <li><strong>resolution_hours</strong>: (resolved - created) in decimal hours, per ticket</li>
+        <li><strong>SLA compliance</strong>: ticket meets SLA if resolution_hours is less than or equal to the configured target for that priority. Open tickets (blank resolved) are excluded from all compliance and MTTR figures.</li>
+        <li><strong>MTTR</strong>: mean time to resolve = average resolution_hours across all resolved tickets in the group</li>
+        <li><strong>Repeat incidents</strong>: grouped by category (case-insensitive, trimmed). Cumulative resolution hours = sum of resolution_hours for all resolved tickets in that category.</li>
+        <li><strong>Heatmap</strong>: counts tickets by day of week (Mon-Sun) and hour of day (00-23) using the created datetime. Open tickets are included in heatmap counts.</li>
+      </ul>
+    </div>
+    <div class="ref-section">
+      <h3>SLA defaults</h3>
+      <ul>
+        <li>P1: 4 hours</li>
+        <li>P2: 8 hours</li>
+        <li>P3: 24 hours</li>
+      </ul>
+      <p>Edit the targets in the Analyse view before clicking Analyse.</p>
+    </div>
+    <div class="ref-section">
+      <h3>AI summary</h3>
+      <p>The AI button sends only the computed metrics string (never raw CSV rows) to the serverless backend, which calls NVIDIA-hosted DeepSeek or MiniMax. The model is instructed to write 3-5 sentences identifying the top 3 operational risks and a recommended intervention for each.</p>
+      <p>If no API key is configured, the button falls back to a deterministic summary generated entirely in the browser from the same metrics.</p>
+    </div>
+    <div class="ref-section">
+      <h3>Data handling</h3>
+      <p>Your CSV is processed entirely in the browser. Raw ticket rows are never sent to any server. The only external request is the optional AI summary call, which transmits only the computed metrics string (under 1,500 characters).</p>
+    </div>
+  </section>
+
+</main>
+
+<script>
+(function () {
+  "use strict";
+
+  // ---- Nav ----
+  const navToggle = document.getElementById("nav-toggle");
+  const navLinks = document.getElementById("nav-links");
+  navToggle.addEventListener("click", () => {
+    const open = navLinks.classList.toggle("open");
+    navToggle.setAttribute("aria-expanded", String(open));
+  });
+
+  navLinks.querySelectorAll("a[data-view]").forEach(a => {
+    a.addEventListener("click", e => {
+      e.preventDefault();
+      const view = a.dataset.view;
+      navLinks.querySelectorAll("a").forEach(x => x.classList.remove("active"));
+      a.classList.add("active");
+      document.querySelectorAll(".view").forEach(v => v.classList.remove("active"));
+      const target = document.getElementById("view-" + view);
+      if (target) target.classList.add("active");
+      navLinks.classList.remove("open");
+      navToggle.setAttribute("aria-expanded", "false");
+    });
+  });
+
+  // ---- Sample CSV ----
+  const SAMPLE_CSV = `id,created,resolved,priority,category,store
+T001,2026-06-22 08:05,2026-06-22 09:30,P2,POS,STORE-01
+T002,2026-06-22 08:15,2026-06-22 11:45,P3,Network,STORE-02
+T003,2026-06-22 09:00,2026-06-22 14:10,P1,POS,STORE-01
+T004,2026-06-22 10:30,2026-06-22 14:00,P3,Email,STORE-03
+T005,2026-06-23 07:45,2026-06-23 09:10,P2,Hardware,STORE-02
+T006,2026-06-23 08:20,2026-06-24 10:30,P3,Access,STORE-04
+T007,2026-06-23 09:05,2026-06-23 12:30,P2,Network,STORE-01
+T008,2026-06-23 13:00,2026-06-23 15:15,P2,POS,STORE-03
+T009,2026-06-24 06:30,2026-06-24 11:00,P1,POS,STORE-02
+T010,2026-06-24 08:00,2026-06-24 09:00,P2,Email,STORE-01
+T011,2026-06-24 09:45,2026-06-24 11:00,P3,Hardware,STORE-04
+T012,2026-06-24 11:00,2026-06-24 13:20,P2,Access,STORE-02
+T013,2026-06-24 14:00,2026-06-24 17:30,P3,POS,STORE-03
+T014,2026-06-25 07:00,2026-06-25 08:45,P1,Network,STORE-01
+T015,2026-06-25 07:30,2026-06-25 09:00,P2,POS,STORE-04
+T016,2026-06-25 10:00,2026-06-25 12:45,P3,Email,STORE-02
+T017,2026-06-25 11:30,2026-06-25 14:00,P2,Hardware,STORE-03
+T018,2026-06-25 15:00,2026-06-25 17:30,P3,Access,STORE-01
+T019,2026-06-26 08:00,2026-06-26 09:30,P1,POS,STORE-02
+T020,2026-06-26 08:30,2026-06-26 17:30,P2,Network,STORE-04
+T021,2026-06-26 09:00,2026-06-26 11:30,P3,Email,STORE-03
+T022,2026-06-26 10:00,2026-06-26 16:00,P3,POS,STORE-01
+T023,2026-06-26 13:00,2026-06-26 14:00,P2,Hardware,STORE-02
+T024,2026-06-27 07:00,2026-06-27 10:45,P1,Access,STORE-04
+T025,2026-06-27 08:00,2026-06-27 09:20,P2,POS,STORE-03
+T026,2026-06-27 09:00,2026-06-27 13:30,P3,Network,STORE-01
+T027,2026-06-27 10:00,2026-06-27 11:00,P2,Email,STORE-02
+T028,2026-06-27 14:00,2026-06-28 16:30,P3,Hardware,STORE-04
+T029,2026-06-28 07:30,2026-06-28 08:15,P1,POS,STORE-03
+T030,2026-06-28 08:00,2026-06-28 17:20,P2,Access,STORE-01
+T031,2026-06-28 09:30,2026-06-28 11:00,P3,Email,STORE-02
+T032,2026-06-28 10:00,2026-06-28 14:45,P3,POS,STORE-04
+T033,2026-06-28 11:00,2026-06-28 13:00,P2,Network,STORE-03
+T034,2026-06-29 08:00,2026-06-29 09:30,P2,Hardware,STORE-01
+T035,2026-06-29 09:00,,P1,POS,STORE-02
+T036,2026-06-29 10:30,,P3,Network,STORE-04`;
+
+  document.getElementById("btn-sample").addEventListener("click", () => {
+    document.getElementById("csv-paste").value = SAMPLE_CSV;
+  });
+
+  // ---- File reader ----
+  document.getElementById("csv-file").addEventListener("change", function () {
+    const file = this.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      document.getElementById("csv-paste").value = e.target.result;
+    };
+    reader.readAsText(file);
+  });
+
+  // ---- CSV parser ----
+  function parseCSV(text) {
+    const lines = text.replace(/\r\n/g, "\n").replace(/\r/g, "\n").split("\n");
+    const rows = [];
+    let inQuote = false;
+    let cur = [];
+    let field = "";
+
+    for (let li = 0; li < lines.length; li++) {
+      const line = lines[li];
+      if (!inQuote && line.trim() === "") {
+        if (cur.length > 0) { rows.push(cur); cur = []; field = ""; }
+        continue;
+      }
+      for (let i = 0; i < line.length; i++) {
+        const ch = line[i];
+        if (ch === '"') {
+          if (inQuote && line[i + 1] === '"') { field += '"'; i++; }
+          else inQuote = !inQuote;
+        } else if (ch === ',' && !inQuote) {
+          cur.push(field.trim()); field = "";
+        } else {
+          field += ch;
+        }
+      }
+      if (inQuote) {
+        field += "\n";
+      } else {
+        cur.push(field.trim()); field = "";
+        rows.push(cur); cur = [];
+      }
+    }
+    if (cur.length > 0 || field !== "") {
+      cur.push(field.trim());
+      rows.push(cur);
+    }
+    return rows;
+  }
+
+  function detectHeaders(rows) {
+    const ALIASES = {
+      id: ["id"],
+      created: ["created", "opened", "created_at"],
+      resolved: ["resolved", "closed", "resolved_at"],
+      priority: ["priority", "pri"],
+      category: ["category", "cat"],
+      store: ["store", "site"],
+    };
+    const header = rows[0].map(h => h.toLowerCase().trim());
+    const idx = {};
+    for (const [key, aliases] of Object.entries(ALIASES)) {
+      for (const alias of aliases) {
+        const i = header.indexOf(alias);
+        if (i !== -1) { idx[key] = i; break; }
+      }
+    }
+    return idx;
+  }
+
+  function parseDate(s) {
+    if (!s || s.trim() === "") return null;
+    s = s.trim();
+    // YYYY-MM-DD HH:MM or YYYY-MM-DDTHH:MM or ISO
+    const cleaned = s.replace(" ", "T");
+    const d = new Date(cleaned);
+    return isNaN(d.getTime()) ? null : d;
+  }
+
+  function hoursFromMs(ms) {
+    return ms / 3600000;
+  }
+
+  // ---- Compute metrics ----
+  function computeMetrics(rows, idx, slaTargets) {
+    const tickets = [];
+    let skippedOpen = 0;
+
+    for (let i = 1; i < rows.length; i++) {
+      const row = rows[i];
+      if (row.every(c => c === "")) continue;
+      const created = parseDate(row[idx.created]);
+      const resolvedRaw = idx.resolved !== undefined ? row[idx.resolved] : "";
+      const resolved = resolvedRaw && resolvedRaw.trim() !== "" ? parseDate(resolvedRaw) : null;
+      const priority = (row[idx.priority] || "").trim().toUpperCase();
+      const category = (row[idx.category] || "").trim().toLowerCase();
+      const store = (row[idx.store] || "").trim();
+      const id = (row[idx.id] || "").trim();
+
+      if (!created) continue;
+
+      let resHours = null;
+      let meetsSLA = null;
+      let isOpen = false;
+
+      if (!resolved) {
+        skippedOpen++;
+        isOpen = true;
+      } else {
+        resHours = hoursFromMs(resolved - created);
+        if (resHours < 0) resHours = null;
+        if (resHours !== null && slaTargets[priority] !== undefined) {
+          meetsSLA = resHours <= slaTargets[priority];
+        }
+      }
+
+      tickets.push({ id, created, resolved, priority, category, store, resHours, meetsSLA, isOpen });
+    }
+
+    // Overall compliance
+    const resolved = tickets.filter(t => !t.isOpen && t.meetsSLA !== null);
+    const metSLA = resolved.filter(t => t.meetsSLA);
+    const overallCompliance = resolved.length > 0 ? (metSLA.length / resolved.length) * 100 : null;
+
+    // Per-priority compliance
+    const priorities = ["P1", "P2", "P3"];
+    const perPriority = {};
+    for (const p of priorities) {
+      const pTickets = resolved.filter(t => t.priority === p);
+      const pMet = pTickets.filter(t => t.meetsSLA);
+      perPriority[p] = {
+        total: pTickets.length,
+        met: pMet.length,
+        compliance: pTickets.length > 0 ? (pMet.length / pTickets.length) * 100 : null,
+      };
+    }
+
+    // Per-category compliance
+    const catMap = {};
+    for (const t of tickets) {
+      if (t.isOpen || t.meetsSLA === null) continue;
+      if (!catMap[t.category]) catMap[t.category] = { total: 0, met: 0 };
+      catMap[t.category].total++;
+      if (t.meetsSLA) catMap[t.category].met++;
+    }
+    const perCategory = {};
+    for (const [cat, v] of Object.entries(catMap)) {
+      perCategory[cat] = {
+        total: v.total,
+        met: v.met,
+        compliance: v.total > 0 ? (v.met / v.total) * 100 : null,
+      };
+    }
+
+    // MTTR overall and per category
+    const resolvedTickets = tickets.filter(t => !t.isOpen && t.resHours !== null);
+    const overallMTTR = resolvedTickets.length > 0
+      ? resolvedTickets.reduce((s, t) => s + t.resHours, 0) / resolvedTickets.length
+      : null;
+
+    const mttrPerCategory = {};
+    for (const t of resolvedTickets) {
+      if (!mttrPerCategory[t.category]) mttrPerCategory[t.category] = [];
+      mttrPerCategory[t.category].push(t.resHours);
+    }
+    const mttrCat = {};
+    for (const [cat, hrs] of Object.entries(mttrPerCategory)) {
+      mttrCat[cat] = hrs.reduce((s, h) => s + h, 0) / hrs.length;
+    }
+
+    // Repeat incidents
+    const repeatMap = {};
+    for (const t of resolvedTickets) {
+      if (!repeatMap[t.category]) repeatMap[t.category] = { count: 0, cumHours: 0 };
+      repeatMap[t.category].count++;
+      repeatMap[t.category].cumHours += t.resHours;
+    }
+    // Also count open tickets in total count
+    for (const t of tickets.filter(t => t.isOpen)) {
+      if (!repeatMap[t.category]) repeatMap[t.category] = { count: 0, cumHours: 0 };
+      repeatMap[t.category].count++;
+    }
+
+    const repeatRows = Object.entries(repeatMap)
+      .map(([cat, v]) => ({ cat, count: v.count, cumHours: v.cumHours }))
+      .sort((a, b) => b.cumHours - a.cumHours);
+
+    // Flag top 2 by cumulative hours
+    const topN = 2;
+    const flagged = new Set(repeatRows.slice(0, topN).map(r => r.cat));
+
+    // Heatmap: 7x24 grid indexed [day][hour], day=0 Mon
+    const heatmap = Array.from({ length: 7 }, () => new Array(24).fill(0));
+    for (const t of tickets) {
+      if (!t.created) continue;
+      let dow = t.created.getDay(); // 0=Sun
+      dow = (dow === 0) ? 6 : dow - 1; // 0=Mon
+      const hour = t.created.getHours();
+      heatmap[dow][hour]++;
+    }
+
+    return {
+      tickets,
+      skippedOpen,
+      overallCompliance,
+      perPriority,
+      perCategory,
+      overallMTTR,
+      mttrCat,
+      repeatRows,
+      flagged,
+      heatmap,
+    };
+  }
+
+  // ---- Render dashboard ----
+  function complianceClass(pct) {
+    if (pct === null) return "";
+    if (pct >= 90) return "kpi-good";
+    if (pct >= 70) return "kpi-warn";
+    return "kpi-bad";
+  }
+  function pillClass(pct) {
+    if (pct === null) return "";
+    if (pct >= 90) return "pill-good";
+    if (pct >= 70) return "pill-warn";
+    return "pill-bad";
+  }
+  function fmtPct(v) {
+    if (v === null) return "N/A";
+    return v.toFixed(1) + "%";
+  }
+  function fmtHrs(v) {
+    if (v === null || v === undefined) return "N/A";
+    return v.toFixed(1) + "h";
+  }
+  function esc(s) {
+    return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+  }
+
+  let _lastMetrics = null;
+  let _lastSummaryText = null;
+
+  function renderDashboard(metrics, slaTargets) {
+    _lastMetrics = metrics;
+    const dash = document.getElementById("dashboard");
+    dash.classList.add("visible");
+
+    // Overall compliance
+    const oc = metrics.overallCompliance;
+    document.getElementById("overall-compliance-num").textContent = oc !== null ? oc.toFixed(1) + "%" : "N/A";
+    const ocBox = document.getElementById("overall-compliance-box");
+    ocBox.style.background = oc === null ? "#888" : oc >= 90 ? "var(--accent)" : oc >= 70 ? "#b8860b" : "var(--sienna)";
+
+    // Open tickets note
+    const note = document.getElementById("open-tickets-note");
+    if (metrics.skippedOpen > 0) {
+      note.textContent = metrics.skippedOpen + " open ticket" + (metrics.skippedOpen > 1 ? "s" : "") + " excluded from compliance and MTTR.";
+    } else {
+      note.textContent = "All tickets resolved.";
+    }
+
+    // Per-priority
+    const pg = document.getElementById("priority-grid");
+    pg.innerHTML = "";
+    const pColors = { P1: "#c0392b", P2: "#d68910", P3: "var(--accent)" };
+    for (const p of ["P1", "P2", "P3"]) {
+      const d = metrics.perPriority[p];
+      const pct = d.compliance;
+      const cls = complianceClass(pct);
+      const barPct = pct !== null ? pct.toFixed(1) : 0;
+      const fillColor = pct === null ? "#ccc" : pct >= 90 ? "var(--accent)" : pct >= 70 ? "#e6ac00" : "var(--sienna)";
+      const html = `<div class="pcomp-card ${cls}">
+        <div class="pcomp-header">
+          <span style="font-family:var(--mono);font-weight:700;font-size:.95rem;color:${pColors[p]}">${esc(p)}</span>
+          <span style="font-family:var(--mono);font-size:1.25rem;font-weight:500">${fmtPct(pct)}</span>
+        </div>
+        <div class="pcomp-bar-track">
+          <div class="pcomp-bar-fill" style="width:${barPct}%;background:${fillColor}"></div>
+        </div>
+        <div class="pcomp-sub">${esc(d.met)} / ${esc(d.total)} resolved tickets met SLA (${esc(slaTargets[p])}h target)</div>
+      </div>`;
+      pg.insertAdjacentHTML("beforeend", html);
+    }
+
+    // Per-category compliance table
+    const catTbody = document.querySelector("#cat-comp-table tbody");
+    catTbody.innerHTML = "";
+    const catEntries = Object.entries(metrics.perCategory).sort((a, b) => b[1].total - a[1].total);
+    if (catEntries.length === 0) {
+      catTbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:var(--text3)">No data</td></tr>';
+    } else {
+      for (const [cat, d] of catEntries) {
+        const pct = d.compliance;
+        const pillCls = pillClass(pct);
+        catTbody.insertAdjacentHTML("beforeend",
+          `<tr>
+            <td style="font-weight:600">${esc(cat)}</td>
+            <td class="mono">${esc(d.total)}</td>
+            <td class="mono">${esc(d.met)}</td>
+            <td><span class="compliance-pill ${esc(pillCls)}">${fmtPct(pct)}</span></td>
+          </tr>`
+        );
+      }
+    }
+
+    // MTTR bars
+    const mttrDiv = document.getElementById("mttr-bars");
+    mttrDiv.innerHTML = "";
+    const mttrEntries = Object.entries(metrics.mttrCat).sort((a, b) => b[1] - a[1]);
+    const maxMTTR = mttrEntries.length > 0 ? mttrEntries[0][1] : 1;
+    for (const [cat, val] of mttrEntries) {
+      const pct = maxMTTR > 0 ? (val / maxMTTR) * 100 : 0;
+      mttrDiv.insertAdjacentHTML("beforeend",
+        `<div class="bar-row">
+          <span class="bar-label" title="${esc(cat)}">${esc(cat)}</span>
+          <div class="bar-track"><div class="bar-fill" style="width:${pct.toFixed(1)}%"></div></div>
+          <span class="bar-val">${fmtHrs(val)}</span>
+        </div>`
+      );
+    }
+
+    // MTTR overall KPI
+    const mttrRow = document.getElementById("mttr-overall-row");
+    mttrRow.innerHTML = `<div class="kpi-card">
+      <div class="kpi-card-label">Overall MTTR</div>
+      <div class="kpi-card-val">${fmtHrs(metrics.overallMTTR)}</div>
+      <div class="kpi-card-sub">Mean time to resolve (all categories)</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-card-label">Resolved tickets</div>
+      <div class="kpi-card-val" style="font-family:var(--mono)">${esc(metrics.tickets.filter(t => !t.isOpen).length)}</div>
+      <div class="kpi-card-sub">Of ${esc(metrics.tickets.length)} total (${esc(metrics.skippedOpen)} open)</div>
+    </div>`;
+
+    // Repeat incidents table
+    const rTbody = document.querySelector("#repeat-table tbody");
+    rTbody.innerHTML = "";
+    for (const row of metrics.repeatRows) {
+      const isTop = metrics.flagged.has(row.cat);
+      rTbody.insertAdjacentHTML("beforeend",
+        `<tr>
+          <td style="font-weight:600">${esc(row.cat)}${isTop ? '<span class="flag-top">High vol</span>' : ""}</td>
+          <td class="mono">${esc(row.count)}</td>
+          <td class="mono">${row.cumHours.toFixed(1)}h</td>
+          <td>${isTop ? '<span style="color:var(--sienna);font-size:.8rem;font-weight:700">Investigate</span>' : '<span style="color:var(--text3);font-size:.8rem">Monitor</span>'}</td>
+        </tr>`
+      );
+    }
+
+    // Heatmap
+    renderHeatmap(metrics.heatmap);
+
+    // Reset AI output
+    document.getElementById("ai-output").classList.remove("visible");
+    _lastSummaryText = null;
+
+    dash.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+
+  function renderHeatmap(heatmap) {
+    const days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+    const HOURS_SHOW = [0, 6, 12, 18, 23];
+    let maxVal = 0;
+    for (let d = 0; d < 7; d++) for (let h = 0; h < 24; h++) if (heatmap[d][h] > maxVal) maxVal = heatmap[d][h];
+
+    const grid = document.getElementById("heatmap-grid");
+    grid.innerHTML = "";
+
+    // Corner
+    const corner = document.createElement("div");
+    corner.className = "hm-cell hm-corner";
+    grid.appendChild(corner);
+
+    // Hour labels row
+    for (let h = 0; h < 24; h++) {
+      const cell = document.createElement("div");
+      cell.className = "hm-cell hm-label-row";
+      cell.textContent = HOURS_SHOW.includes(h) ? String(h).padStart(2, "0") : "";
+      grid.appendChild(cell);
+    }
+
+    // Data rows
+    for (let d = 0; d < 7; d++) {
+      // Day label
+      const dayCell = document.createElement("div");
+      dayCell.className = "hm-cell hm-label-day";
+      dayCell.textContent = days[d];
+      grid.appendChild(dayCell);
+
+      for (let h = 0; h < 24; h++) {
+        const val = heatmap[d][h];
+        const cell = document.createElement("div");
+        cell.className = "hm-cell hm-data";
+        const opacity = maxVal > 0 ? val / maxVal : 0;
+        // Deep teal accent with opacity scaling
+        const alpha = (0.08 + opacity * 0.88).toFixed(3);
+        cell.style.background = `rgba(15, 95, 84, ${alpha})`;
+        cell.title = `${days[d]} ${String(h).padStart(2,"0")}:00 - ${val} ticket${val !== 1 ? "s" : ""}`;
+        grid.appendChild(cell);
+      }
+    }
+
+    // Legend
+    const legend = document.getElementById("heatmap-legend");
+    legend.innerHTML = "";
+    const steps = [0.08, 0.3, 0.55, 0.8, 0.96];
+    const labels = ["0", "low", "", "high", "max"];
+    legend.insertAdjacentHTML("beforeend", "<span>Tickets:</span>");
+    for (let i = 0; i < steps.length; i++) {
+      const sw = document.createElement("span");
+      sw.className = "legend-swatch";
+      sw.style.background = `rgba(15,95,84,${steps[i]})`;
+      legend.appendChild(sw);
+      if (labels[i]) {
+        const span = document.createElement("span");
+        span.textContent = labels[i];
+        legend.appendChild(span);
+      }
+    }
+  }
+
+  // ---- Analyse button ----
+  document.getElementById("btn-analyse").addEventListener("click", () => {
+    const raw = document.getElementById("csv-paste").value.trim();
+    const statusDiv = document.getElementById("parse-status");
+    statusDiv.innerHTML = "";
+    document.getElementById("dashboard").classList.remove("visible");
+
+    if (!raw) {
+      statusDiv.innerHTML = '<div class="alert alert-warn">Please paste CSV data or upload a file first.</div>';
+      return;
+    }
+
+    const slaTargets = {
+      P1: parseFloat(document.getElementById("sla-p1").value) || 4,
+      P2: parseFloat(document.getElementById("sla-p2").value) || 8,
+      P3: parseFloat(document.getElementById("sla-p3").value) || 24,
+    };
+
+    let rows;
+    try {
+      rows = parseCSV(raw);
+    } catch (e) {
+      statusDiv.innerHTML = '<div class="alert alert-err">CSV parse error: ' + esc(String(e)) + '</div>';
+      return;
+    }
+
+    if (rows.length < 2) {
+      statusDiv.innerHTML = '<div class="alert alert-warn">CSV must have a header row and at least one data row.</div>';
+      return;
+    }
+
+    const idx = detectHeaders(rows);
+    const required = ["created", "priority", "category"];
+    for (const k of required) {
+      if (idx[k] === undefined) {
+        statusDiv.innerHTML = `<div class="alert alert-err">Missing required column: <code>${esc(k)}</code>. Check column names.</div>`;
+        return;
+      }
+    }
+    if (idx.resolved === undefined) {
+      statusDiv.innerHTML = '<div class="alert alert-warn">No resolved/closed column found. All tickets treated as open and excluded from SLA/MTTR.</div>';
+    }
+
+    let metrics;
+    try {
+      metrics = computeMetrics(rows, idx, slaTargets);
+    } catch (e) {
+      statusDiv.innerHTML = '<div class="alert alert-err">Computation error: ' + esc(String(e)) + '</div>';
+      return;
+    }
+
+    const resolvedCount = metrics.tickets.filter(t => !t.isOpen).length;
+    if (resolvedCount === 0) {
+      statusDiv.innerHTML = '<div class="alert alert-warn">No resolved tickets found. Check datetime format and resolved column.</div>';
+    } else {
+      statusDiv.innerHTML = `<div class="alert alert-info">Parsed ${esc(metrics.tickets.length)} tickets (${esc(resolvedCount)} resolved, ${esc(metrics.skippedOpen)} open/excluded).</div>`;
+    }
+
+    renderDashboard(metrics, slaTargets);
+  });
+
+  // ---- Build metrics string ----
+  function buildMetricsString(metrics) {
+    if (!metrics) return "";
+    const lines = [];
+    lines.push(`Overall SLA compliance: ${metrics.overallCompliance !== null ? metrics.overallCompliance.toFixed(1) + "%" : "N/A"}`);
+    for (const p of ["P1", "P2", "P3"]) {
+      const d = metrics.perPriority[p];
+      lines.push(`${p} compliance: ${d.compliance !== null ? d.compliance.toFixed(1) + "%" : "N/A"} (${d.met}/${d.total} met)`);
+    }
+    lines.push(`Overall MTTR: ${metrics.overallMTTR !== null ? metrics.overallMTTR.toFixed(1) + "h" : "N/A"}`);
+    for (const [cat, val] of Object.entries(metrics.mttrCat)) {
+      lines.push(`MTTR ${cat}: ${val.toFixed(1)}h`);
+    }
+    for (const row of metrics.repeatRows.slice(0, 6)) {
+      lines.push(`Category ${row.cat}: ${row.count} tickets, ${row.cumHours.toFixed(1)}h cumulative`);
+    }
+    lines.push(`Open/excluded tickets: ${metrics.skippedOpen}`);
+    lines.push(`Total tickets: ${metrics.tickets.length}`);
+    return lines.join("; ");
+  }
+
+  // ---- Deterministic fallback summary ----
+  function buildFallbackSummary(metrics) {
+    if (!metrics) return "";
+    const oc = metrics.overallCompliance;
+    const p1 = metrics.perPriority["P1"];
+    const p2 = metrics.perPriority["P2"];
+    const topCat = metrics.repeatRows[0];
+    const worstPriority = ["P1", "P2", "P3"].reduce((worst, p) => {
+      const d = metrics.perPriority[p];
+      if (d.compliance === null) return worst;
+      if (worst === null) return p;
+      return d.compliance < metrics.perPriority[worst].compliance ? p : worst;
+    }, null);
+
+    let summary = "";
+
+    // Overall
+    if (oc !== null) {
+      summary += `Overall SLA compliance stands at ${oc.toFixed(1)}%, `;
+      if (oc < 80) summary += "which is below the recommended 80% threshold and requires immediate review. ";
+      else if (oc < 90) summary += "indicating room for improvement before the next review period. ";
+      else summary += "meeting the target level for this period. ";
+    }
+
+    // Worst priority
+    if (worstPriority && metrics.perPriority[worstPriority].compliance !== null) {
+      const wc = metrics.perPriority[worstPriority].compliance;
+      const wd = metrics.perPriority[worstPriority];
+      summary += `Risk 1: ${worstPriority} compliance is the lowest at ${wc.toFixed(1)}% (${wd.met}/${wd.total} tickets met SLA); recommended intervention: review assignment rules and escalation paths for ${worstPriority} tickets to reduce resolution delays. `;
+    }
+
+    // Top repeat category
+    if (topCat) {
+      summary += `Risk 2: The "${topCat.cat}" category has the highest repeat volume (${topCat.count} tickets, ${topCat.cumHours.toFixed(1)}h cumulative resolution time); recommended intervention: conduct a root-cause analysis and consider preventive maintenance or self-service documentation for this category. `;
+    }
+
+    // MTTR
+    if (metrics.overallMTTR !== null) {
+      summary += `Risk 3: Mean time to resolve is ${metrics.overallMTTR.toFixed(1)} hours overall; `;
+      const highMTTR = Object.entries(metrics.mttrCat).sort((a, b) => b[1] - a[1])[0];
+      if (highMTTR) {
+        summary += `the "${highMTTR[0]}" category has the highest MTTR at ${highMTTR[1].toFixed(1)}h; recommended intervention: investigate staffing or tooling gaps in this area and set targeted SLA review checkpoints.`;
+      } else {
+        summary += "recommended intervention: benchmark against industry standards and set targeted improvement goals per category.";
+      }
+    }
+
+    return summary.trim() || "Insufficient data to generate summary.";
+  }
+
+  // ---- AI summary ----
+  document.getElementById("btn-ai").addEventListener("click", async () => {
+    if (!_lastMetrics) {
+      alert("Run an analysis first.");
+      return;
+    }
+    const btn = document.getElementById("btn-ai");
+    const model = document.getElementById("model-select").value;
+    const metricsStr = buildMetricsString(_lastMetrics);
+    const aiOut = document.getElementById("ai-output");
+    const summaryEl = document.getElementById("ai-summary-text");
+    const receiptEl = document.getElementById("ai-receipt");
+
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span> Writing...';
+    aiOut.classList.add("visible");
+    summaryEl.textContent = "Requesting AI summary...";
+    receiptEl.textContent = "";
+
+    try {
+      const resp = await fetch("/api/ai", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ task: "summary", metrics: metricsStr, model }),
+      });
+      if (resp.ok) {
+        const data = await resp.json();
+        const text = data.summary || "";
+        _lastSummaryText = text;
+        summaryEl.textContent = text;
+        receiptEl.textContent = `Model: ${data.model || model} | Task: summary | ${new Date().toISOString()}`;
+      } else if (resp.status === 503) {
+        // No key, use fallback
+        const fallback = buildFallbackSummary(_lastMetrics);
+        _lastSummaryText = fallback;
+        summaryEl.textContent = fallback;
+        receiptEl.textContent = `Deterministic fallback (no API key) | ${new Date().toISOString()}`;
+      } else {
+        let errMsg = "AI backend error (" + resp.status + ").";
+        try { const d = await resp.json(); errMsg += " " + (d.error || ""); } catch {}
+        summaryEl.textContent = errMsg;
+        receiptEl.textContent = new Date().toISOString();
+      }
+    } catch (e) {
+      // Network error or not deployed - deterministic fallback
+      const fallback = buildFallbackSummary(_lastMetrics);
+      _lastSummaryText = fallback;
+      summaryEl.textContent = fallback;
+      receiptEl.textContent = `Deterministic fallback (backend unavailable) | ${new Date().toISOString()}`;
+    }
+
+    btn.disabled = false;
+    btn.innerHTML = "Write exec summary (AI)";
+  });
+
+  // ---- Export JSON ----
+  document.getElementById("btn-export-json").addEventListener("click", () => {
+    if (!_lastMetrics) return;
+    const m = _lastMetrics;
+    const obj = {
+      generated: new Date().toISOString(),
+      overallCompliance: m.overallCompliance,
+      perPriority: m.perPriority,
+      perCategory: m.perCategory,
+      overallMTTR: m.overallMTTR,
+      mttrByCategory: m.mttrCat,
+      repeatIncidents: m.repeatRows,
+      totalTickets: m.tickets.length,
+      openExcluded: m.skippedOpen,
+    };
+    const blob = new Blob([JSON.stringify(obj, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "slo-watch-metrics.json";
+    a.click();
+    URL.revokeObjectURL(url);
+  });
+
+  // ---- Copy summary ----
+  document.getElementById("btn-copy-summary").addEventListener("click", () => {
+    const text = _lastSummaryText || document.getElementById("ai-summary-text").textContent;
+    if (!text) { alert("No summary to copy. Run the AI summary first."); return; }
+    navigator.clipboard.writeText(text).then(() => {
+      const btn = document.getElementById("btn-copy-summary");
+      const orig = btn.textContent;
+      btn.textContent = "Copied!";
+      setTimeout(() => { btn.textContent = orig; }, 1800);
+    }).catch(() => {
+      prompt("Copy this:", text);
+    });
+  });
+
+})();
+</script>
+</body>
+</html>
