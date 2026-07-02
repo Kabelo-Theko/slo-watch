@@ -1,0 +1,95 @@
+/* ════════════════════════════════════════════════════════════════════
+   SLO WATCH · "THE SERVICE-LEVEL REVIEW" DESIGN SYSTEM — TOKENS
+   Project: slo-watch · github.com/Kabelo-Theko/slo-watch
+   Persona: a broadsheet market report on your service desk.
+   Themes on html[data-theme]: morning (salmon) · evening (oxford night).
+   Up/down = market semantics for met/missed SLA. Measured pairs:
+   accessibility.md.
+   ════════════════════════════════════════════════════════════════════ */
+
+/* ════════════════════════════════════════════════════════════════
+   SLO WATCH · "THE SERVICE-LEVEL REVIEW" — a broadsheet market
+   report on your support desk. Salmon paper, oxford ink, serif
+   nameplate, double-rule dividers. The data is the market;
+   the AI is the columnist (prose only, never a number).
+   Themes: morning (salmon broadsheet) · evening (oxford night)
+   ════════════════════════════════════════════════════════════════ */
+:root{
+  --font-display:"Source Serif 4",Georgia,serif;
+  --font-text:"Archivo",system-ui,sans-serif;
+  --font-data:"IBM Plex Mono",ui-monospace,monospace;
+  --text-xs:.71875rem;--text-sm:.8125rem;--text-base:.9375rem;--text-md:1.0625rem;
+  --text-lg:1.375rem;--text-xl:1.75rem;
+  --text-index:clamp(3rem,2rem + 4.5vw,5.25rem);
+  --nameplate:clamp(1.9rem,1.2rem + 3.2vw,3.2rem);
+  --space-1:4px;--space-2:8px;--space-3:12px;--space-4:16px;--space-5:20px;
+  --space-6:24px;--space-8:32px;--space-10:40px;--space-12:48px;--space-16:64px;
+  --radius-xs:2px;--radius-sm:4px;
+  --motion-micro:120ms;--motion-small:200ms;--motion-large:300ms;--motion-page:400ms;
+  --ease-standard:cubic-bezier(.2,0,0,1);
+  --ease-emphasized:cubic-bezier(.05,.7,.1,1);
+  --page-max:1080px;
+}
+:root,html[data-theme="morning"]{
+  color-scheme:light;
+  --canvas-base:#FAF0E4;     /* salmon paper           */
+  --canvas-sunken:#F2E4D2;
+  --canvas-card:#FFF9F1;
+  --canvas-overlay:#FFF9F1;
+  --text-max:#221C14;        /* 14.9:1                 */
+  --text-primary:#33291D;    /* 11.9:1                 */
+  --text-secondary:#5D5140;  /* 6.5:1                  */
+  --text-tertiary:#71634F;   /* 4.9:1 (base only)      */
+  --text-disabled:#B4A78F;
+  --accent:#14498C;          /* oxford blue            */
+  --accent-hover:#0F3C75;
+  --accent-pressed:#0B305F;
+  --accent-text:#14498C;     /* 7.2:1 on base          */
+  --accent-subtle:rgba(20,73,140,.08);
+  --on-accent:#F6EFE4;       /* 6.9:1 on oxford        */
+  --up:#1E6B41;   --up-text:#1E6B41;   --up-subtle:rgba(30,107,65,.10);   --on-up:#F2FBF5;
+  --down:#A5231C; --down-text:#A5231C; --down-subtle:rgba(165,35,28,.08); --on-down:#FFF5F3;
+  --warn:#7A5600; --warn-text:#7A5600; --warn-subtle:rgba(150,106,0,.12);
+  --p1:#A5231C;--p2:#7A5600;--p3:#14498C;
+  --rule-heavy:#33291D;      /* the thick newspaper rule */
+  --rule-light:rgba(51,41,29,.28);
+  --border-default:rgba(51,41,29,.16);
+  --border-strong:rgba(51,41,29,.30);
+  --shadow-1:0 1px 2px rgba(51,41,29,.05),0 2px 6px rgba(51,41,29,.05);
+  --shadow-2:0 8px 22px -8px rgba(51,41,29,.18);
+  --focus-ring:0 0 0 2px var(--canvas-base),0 0 0 4px var(--accent);
+  --scrim:rgba(34,28,20,.5);
+  --hm-r:20;--hm-g:73;--hm-b:140;  /* heatmap scale: oxford  */
+}
+html[data-theme="evening"]{
+  color-scheme:dark;
+  --canvas-base:#0F1A2C;     /* oxford night           */
+  --canvas-sunken:#0A1322;
+  --canvas-card:#182642;
+  --canvas-overlay:#1D2C4A;
+  --text-max:#F4E9DA;        /* 14.4:1                 */
+  --text-primary:#E4D8C6;    /* 12.1:1                 */
+  --text-secondary:#AB9F8C;  /* 6.6:1                  */
+  --text-tertiary:#8D8271;   /* 4.6:1 (base only)      */
+  --text-disabled:#55503F;
+  --accent:#F0A379;          /* salmon ink by lamplight */
+  --accent-hover:#F5B593;
+  --accent-pressed:#E89160;
+  --accent-text:#F0A379;     /* 8.0:1 on base          */
+  --accent-subtle:rgba(240,163,121,.10);
+  --on-accent:#33150A;       /* 7.6:1 on salmon        */
+  --up:#6FC48E;   --up-text:#6FC48E;   --up-subtle:rgba(111,196,142,.10);  --on-up:#07220F;
+  --down:#F08A80; --down-text:#F08A80; --down-subtle:rgba(240,138,128,.10);--on-down:#2B0906;
+  --warn:#E3B65C; --warn-text:#E3B65C; --warn-subtle:rgba(227,182,92,.10);
+  --p1:#F08A80;--p2:#E3B65C;--p3:#8FB4E8;
+  --rule-heavy:#E4D8C6;
+  --rule-light:rgba(228,216,198,.30);
+  --border-default:rgba(228,216,198,.12);
+  --border-strong:rgba(228,216,198,.24);
+  --shadow-1:0 1px 3px rgba(0,0,0,.4);
+  --shadow-2:0 10px 26px rgba(0,0,0,.5);
+  --focus-ring:0 0 0 2px var(--canvas-base),0 0 0 4px var(--accent);
+  --scrim:rgba(2,6,14,.7);
+  --hm-r:240;--hm-g:163;--hm-b:121; /* heatmap scale: salmon */
+}
+
