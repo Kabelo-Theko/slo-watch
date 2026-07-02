@@ -1,95 +1,98 @@
 /* ════════════════════════════════════════════════════════════════════
-   SLO WATCH · "THE SERVICE-LEVEL REVIEW" DESIGN SYSTEM — TOKENS
+   SLO WATCH v2 · "VANILLA LEDGER" DESIGN SYSTEM — TOKENS
    Project: slo-watch · github.com/Kabelo-Theko/slo-watch
-   Persona: a broadsheet market report on your service desk.
-   Themes on html[data-theme]: morning (salmon) · evening (oxford night).
-   Up/down = market semantics for met/missed SLA. Measured pairs:
-   accessibility.md.
+   Persona: a well-kept ledger for service levels — vanilla-latte stock,
+   espresso ink, fountain-pen blue. Figures by the desk, prose by the
+   columnist.
+   Themes on html[data-theme]: morning (vanilla) · evening (espresso).
+   Type: Fraunces (display) · Satoshi (text, Fontshare) · Spline Sans Mono
+   (data). Measured pairs: accessibility.md.
    ════════════════════════════════════════════════════════════════════ */
 
 /* ════════════════════════════════════════════════════════════════
-   SLO WATCH · "THE SERVICE-LEVEL REVIEW" — a broadsheet market
-   report on your support desk. Salmon paper, oxford ink, serif
-   nameplate, double-rule dividers. The data is the market;
-   the AI is the columnist (prose only, never a number).
-   Themes: morning (salmon broadsheet) · evening (oxford night)
+   SLO WATCH v2 · "VANILLA LEDGER" — a well-kept ledger for service
+   levels. Vanilla-latte stock, espresso ink, fountain-pen blue.
+   Figures by the desk, prose by the columnist (AI writes words only).
+   Themes: morning (vanilla, default) · evening (espresso)
    ════════════════════════════════════════════════════════════════ */
 :root{
-  --font-display:"Source Serif 4",Georgia,serif;
-  --font-text:"Archivo",system-ui,sans-serif;
-  --font-data:"IBM Plex Mono",ui-monospace,monospace;
-  --text-xs:.71875rem;--text-sm:.8125rem;--text-base:.9375rem;--text-md:1.0625rem;
+  --font-display:"Fraunces",Georgia,serif;          /* the ledger voice   */
+  --font-text:"Satoshi",system-ui,sans-serif;       /* the working voice  */
+  --font-data:"Spline Sans Mono",ui-monospace,monospace; /* every numeral */
+  --text-xs:.75rem;--text-sm:.875rem;--text-base:.9375rem;--text-md:1.0625rem;
   --text-lg:1.375rem;--text-xl:1.75rem;
-  --text-index:clamp(3rem,2rem + 4.5vw,5.25rem);
-  --nameplate:clamp(1.9rem,1.2rem + 3.2vw,3.2rem);
+  --text-h2:clamp(1.7rem,1.2rem + 1.8vw,2.4rem);
+  --text-hero:clamp(2.8rem,1.8rem + 4.6vw,5rem);
+  --text-index:clamp(4rem,2.6rem + 6.5vw,7.5rem);
   --space-1:4px;--space-2:8px;--space-3:12px;--space-4:16px;--space-5:20px;
-  --space-6:24px;--space-8:32px;--space-10:40px;--space-12:48px;--space-16:64px;
-  --radius-xs:2px;--radius-sm:4px;
-  --motion-micro:120ms;--motion-small:200ms;--motion-large:300ms;--motion-page:400ms;
+  --space-6:24px;--space-8:32px;--space-10:40px;--space-12:48px;--space-16:64px;--space-24:96px;
+  --radius-sm:10px;--radius-md:16px;--radius-lg:22px;--radius-pill:999px;
+  --motion-micro:130ms;--motion-small:220ms;--motion-large:320ms;--motion-page:420ms;
   --ease-standard:cubic-bezier(.2,0,0,1);
+  --ease-spring:cubic-bezier(.34,1.26,.5,1);
   --ease-emphasized:cubic-bezier(.05,.7,.1,1);
-  --page-max:1080px;
+  --page-max:1120px;
 }
 :root,html[data-theme="morning"]{
   color-scheme:light;
-  --canvas-base:#FAF0E4;     /* salmon paper           */
-  --canvas-sunken:#F2E4D2;
-  --canvas-card:#FFF9F1;
-  --canvas-overlay:#FFF9F1;
-  --text-max:#221C14;        /* 14.9:1                 */
-  --text-primary:#33291D;    /* 11.9:1                 */
-  --text-secondary:#5D5140;  /* 6.5:1                  */
-  --text-tertiary:#71634F;   /* 4.9:1 (base only)      */
-  --text-disabled:#B4A78F;
-  --accent:#14498C;          /* oxford blue            */
-  --accent-hover:#0F3C75;
-  --accent-pressed:#0B305F;
-  --accent-text:#14498C;     /* 7.2:1 on base          */
-  --accent-subtle:rgba(20,73,140,.08);
-  --on-accent:#F6EFE4;       /* 6.9:1 on oxford        */
-  --up:#1E6B41;   --up-text:#1E6B41;   --up-subtle:rgba(30,107,65,.10);   --on-up:#F2FBF5;
-  --down:#A5231C; --down-text:#A5231C; --down-subtle:rgba(165,35,28,.08); --on-down:#FFF5F3;
+  --canvas-base:#EFE5D2;      /* vanilla latte              */
+  --canvas-sunken:#E6D9C1;
+  --canvas-card:#FBF6EB;      /* ivory card                 */
+  --canvas-overlay:#FFFDF6;
+  --text-max:#221A10;         /* 13.4:1                     */
+  --text-primary:#33291B;     /* 11.4:1                     */
+  --text-secondary:#6B5D48;   /* 5.9:1 on card              */
+  --text-tertiary:#695D46;    /* labels on canvas           */
+  --text-disabled:#B3A78E;
+  --accent:#2743C8;           /* fountain-pen ledger blue   */
+  --accent-hover:#1F37A8;
+  --accent-pressed:#182C8C;
+  --accent-text:#2038AC;      /* 7.6:1 on vanilla           */
+  --accent-subtle:rgba(39,67,200,.08);
+  --on-accent:#F5F6FF;        /* 7.2:1 on blue              */
+  --up:#23713F;   --up-text:#23713F;   --up-subtle:rgba(35,113,63,.11);
+  --down:#B23222; --down-text:#B23222; --down-subtle:rgba(178,50,34,.10);
   --warn:#7A5600; --warn-text:#7A5600; --warn-subtle:rgba(150,106,0,.12);
-  --p1:#A5231C;--p2:#7A5600;--p3:#14498C;
-  --rule-heavy:#33291D;      /* the thick newspaper rule */
-  --rule-light:rgba(51,41,29,.28);
-  --border-default:rgba(51,41,29,.16);
-  --border-strong:rgba(51,41,29,.30);
-  --shadow-1:0 1px 2px rgba(51,41,29,.05),0 2px 6px rgba(51,41,29,.05);
-  --shadow-2:0 8px 22px -8px rgba(51,41,29,.18);
+  --p1:#B23222;--p2:#7A5600;--p3:#2038AC;
+  --border-default:rgba(51,41,27,.14);
+  --border-strong:rgba(51,41,27,.26);
+  --ledger-rule:rgba(51,41,27,.22);   /* fine baselines under numbers */
+  --shadow-1:0 1px 2px rgba(51,41,27,.05),0 3px 10px rgba(51,41,27,.06);
+  --shadow-2:0 10px 28px -8px rgba(51,41,27,.16);
+  --shadow-nav:0 6px 24px -6px rgba(51,41,27,.18);
   --focus-ring:0 0 0 2px var(--canvas-base),0 0 0 4px var(--accent);
-  --scrim:rgba(34,28,20,.5);
-  --hm-r:20;--hm-g:73;--hm-b:140;  /* heatmap scale: oxford  */
+  --scrim:rgba(34,26,16,.5);
+  --hm-r:39;--hm-g:67;--hm-b:200;
 }
 html[data-theme="evening"]{
   color-scheme:dark;
-  --canvas-base:#0F1A2C;     /* oxford night           */
-  --canvas-sunken:#0A1322;
-  --canvas-card:#182642;
-  --canvas-overlay:#1D2C4A;
-  --text-max:#F4E9DA;        /* 14.4:1                 */
-  --text-primary:#E4D8C6;    /* 12.1:1                 */
-  --text-secondary:#AB9F8C;  /* 6.6:1                  */
-  --text-tertiary:#8D8271;   /* 4.6:1 (base only)      */
-  --text-disabled:#55503F;
-  --accent:#F0A379;          /* salmon ink by lamplight */
-  --accent-hover:#F5B593;
-  --accent-pressed:#E89160;
-  --accent-text:#F0A379;     /* 8.0:1 on base          */
-  --accent-subtle:rgba(240,163,121,.10);
-  --on-accent:#33150A;       /* 7.6:1 on salmon        */
-  --up:#6FC48E;   --up-text:#6FC48E;   --up-subtle:rgba(111,196,142,.10);  --on-up:#07220F;
-  --down:#F08A80; --down-text:#F08A80; --down-subtle:rgba(240,138,128,.10);--on-down:#2B0906;
-  --warn:#E3B65C; --warn-text:#E3B65C; --warn-subtle:rgba(227,182,92,.10);
-  --p1:#F08A80;--p2:#E3B65C;--p3:#8FB4E8;
-  --rule-heavy:#E4D8C6;
-  --rule-light:rgba(228,216,198,.30);
-  --border-default:rgba(228,216,198,.12);
-  --border-strong:rgba(228,216,198,.24);
+  --canvas-base:#191108;      /* espresso                    */
+  --canvas-sunken:#120C05;
+  --canvas-card:#251B0F;
+  --canvas-overlay:#2C2113;
+  --text-max:#F7F0E2;         /* 15.9:1                      */
+  --text-primary:#F0E7D8;     /* 15.2:1                      */
+  --text-secondary:#BFB39E;   /* 8.2:1 on card               */
+  --text-tertiary:#9C9078;    /* 5.9:1                       */
+  --text-disabled:#5C5340;
+  --accent:#A9B8FF;           /* periwinkle ink              */
+  --accent-hover:#BFCAFF;
+  --accent-pressed:#93A5F5;
+  --accent-text:#A9B8FF;      /* 9.8:1                       */
+  --accent-subtle:rgba(169,184,255,.10);
+  --on-accent:#10173B;        /* 9.1:1 on periwinkle         */
+  --up:#74C892;   --up-text:#74C892;   --up-subtle:rgba(116,200,146,.10);
+  --down:#F08A7B; --down-text:#F08A7B; --down-subtle:rgba(240,138,123,.10);
+  --warn:#E5B45C; --warn-text:#E5B45C; --warn-subtle:rgba(229,180,92,.10);
+  --p1:#F08A7B;--p2:#E5B45C;--p3:#A9B8FF;
+  --border-default:rgba(240,231,216,.12);
+  --border-strong:rgba(240,231,216,.24);
+  --ledger-rule:rgba(240,231,216,.26);
   --shadow-1:0 1px 3px rgba(0,0,0,.4);
-  --shadow-2:0 10px 26px rgba(0,0,0,.5);
+  --shadow-2:0 12px 30px rgba(0,0,0,.5);
+  --shadow-nav:0 8px 28px rgba(0,0,0,.55);
   --focus-ring:0 0 0 2px var(--canvas-base),0 0 0 4px var(--accent);
-  --scrim:rgba(2,6,14,.7);
-  --hm-r:240;--hm-g:163;--hm-b:121; /* heatmap scale: salmon */
+  --scrim:rgba(6,4,1,.7);
+  --hm-r:169;--hm-g:184;--hm-b:255;
 }
 

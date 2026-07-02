@@ -1,31 +1,27 @@
-# Motion spec — SLO Watch "The Service-Level Review"
+# Motion spec — SLO Watch v2 "Vanilla Ledger"
 
-Temperament: **nearly still**. A paper does not animate; it is *printed*.
-Motion exists only to mark the page turning and the ink drying.
+Temperament: **calm hands on paper** — nothing dances; things settle.
 
 ## Tokens
 ```css
---motion-micro: 120ms;  --motion-small: 200ms;
---motion-large: 300ms;  --motion-page: 400ms;
+--motion-micro: 130ms; --motion-small: 220ms;
+--motion-large: 320ms; --motion-page: 420ms;
 --ease-standard:  cubic-bezier(.2, 0, 0, 1);
+--ease-spring:    cubic-bezier(.34, 1.26, .5, 1);  /* tactile only */
 --ease-emphasized: cubic-bezier(.05, .7, .1, 1);
 ```
 
-## Choreography (complete list — brevity is the point)
-| Interaction | Trigger | Animation | Spec |
-|---|---|---|---|
-| Page turn | section switch / first render | fade + 10px rise on the view | 400ms emphasized — the single load animation |
-| Meters & bars | dashboard render | width 0 → value | 450ms emphasized, once |
-| Heatmap hover | pointer | scale 1.3 + outline | 120ms standard |
-| Row hover | pointer | background tint | instant (no transition needed) |
-| Button press | active | translateY(1px) | 120ms |
-| Writing spinner | AI fetch | rotation loop + `aria-busy` + "Writing…" | until resolve — the only loop |
-| Theme swap | toggle | background transition; heatmap re-inks | 300ms standard |
+## Choreography (complete)
+| Interaction | Animation | Spec |
+|---|---|---|
+| Page turn (view switch) | fade + 12px rise | 420ms emphasized — the one load reveal |
+| Meters & bars | width 0 → value | 500ms emphasized, once |
+| Button hover / press | lift −1px / scale .97 | 130ms spring |
+| Heatmap hover | scale 1.35 + shadow | 130ms spring |
+| Writing spinner | rotation + `aria-busy` | until resolve — the only loop |
+| Theme swap | background transition; heatmap re-inks | 320ms standard |
 
-Explicitly rejected: staggered card entrances (this is a printed page, not a
-deal), count-up numbers (a report states figures; it does not perform them),
-pulsing alerts.
+Rejected: staggered entrances, count-ups, pulsing anything.
 
 ## Reduced motion
-Global collapse to 0.01ms, single iteration. Nothing communicates by motion
-alone — deltas, fills and spinners all have text equivalents.
+Global collapse (0.01ms, single iteration); no information rides on motion.

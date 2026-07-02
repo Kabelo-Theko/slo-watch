@@ -1,79 +1,70 @@
-# Component library — SLO Watch "The Service-Level Review"
+# Component library — SLO Watch v2 "Vanilla Ledger"
 
-Semantic tokens only (`tokens.css`). Type: display = Source Serif 4,
-text = Archivo, data = IBM Plex Mono (tabular numerals everywhere).
+Semantic tokens only. Type: Fraunces (display) · Satoshi (text) · Spline Sans
+Mono (numerals, tabular).
 
-## Masthead (navigation)
-Three bands under a **3px double rule**:
-1. **Top strip** — edition label (mono caps), live dateline, theme toggle.
-2. **Nameplate** — "The Service-Level Review" in serif 700 (centered by
-   newspaper convention — a nameplate, not a hero), mono subtitle.
-3. **Section index** — buttons with a 3px *top* indicator:
-   default / hover / `aria-current` (oxford text + rule) / focus-visible.
+## Floating pill nav (signature)
+Detached, sticky at 12px, blurred ivory pill with soft shadow: brand dot +
+Fraunces wordmark · section pills · theme toggle.
+Pill states: default / hover / active (`aria-current` — espresso-filled) /
+focus-visible.
 
-## Deskheads (section headers — signature)
-`2.5px heavy rule → kicker (A1, B1… mono caps in accent) + serif h2 + right note
-→ 1px light rule`. Number every desk; the kicker doubles as wayfinding.
+## Hero
+Overline (mono caps, provenance claim) → Fraunces headline with *italic
+emphasis* → lede → mono dateline. Max 60ch; the page's one display moment
+outside THE NUMBER.
 
-## Buttons
-Rect (2px radius), engraver icons:
-| State | Primary (oxford/salmon) | Secondary (outline) |
+## Section heads
+Calm Fraunces h2 + right-aligned mono note. No kickers, no rules — whitespace
+(64px) does the separation.
+
+## Panels
+Ivory cards, 22px radius, 1px hairline + soft shadow, 24px padding.
+
+## Buttons (pill, tactile)
+| State | Primary (ledger blue) | Secondary (outline) |
 |---|---|---|
-| default / hover / focus / active(translateY 1px) / disabled(.55) / busy(`aria-busy` + spinner + "Writing…") | ✓ | ✓ |
+| default / hover (−1px lift) / focus / active (.97 spring) / disabled / busy (`aria-busy` + spinner + "Writing…") | ✓ | ✓ |
 
 ## Inputs
-- **CSV textarea**: mono 12.5px on sunken stock; placeholder shows the format.
-- **File input**: dashed border (the "drop the file on the desk" affordance).
-- **SLA number inputs**: mono, 84px, in a ruled table with P-badges and plain-language descriptions.
-- **Model select**: custom caret, no native arrow.
+Sunken vanilla fields, 16px radius, borderless-until-hover; dashed file drop;
+mono number inputs; pill select with custom caret.
 
-## The index tile (`.indexboard`) — the one foreground element
-"THE NUMBER": serif 700 at `clamp(3rem…5.25rem)`, tabular. Beside it the
-**delta badge**: up (green, chart-up icon, "+x pts above the 90% bar") /
-flat (amber, arrow) / down (red, chart-down) — computed against the 90%
-threshold, never invented. Provenance note beneath ("computed from your CSV…").
+## THE NUMBER (`.indexboard`)
+Fraunces stat at clamp(4–7.5rem) over a **2px ledger rule**, with a pill delta
+badge (up green / flat amber / down red — computed vs the 90% bar) and a
+provenance note. The screen's single foreground element.
 
-## Ticker cards (`.ticker`)
-P1/P2/P3: heavy top rule, mono symbol + big tabular %, a **meter** (good ≥90 /
-mid ≥70 / bad) and "met/total vs target" line. Auto-fit grid 200px+.
+## Tickers
+Ivory cards: mono P-badge + big tabular % → rounded meter (good ≥90 / mid ≥70 /
+bad) → "met/total vs target" line.
 
-## Listings (data tables)
-Newspaper listings: caps column heads over a **2px heavy rule**, hairline rows,
-hover tint in accent-subtle, `.num` cells mono-tabular. Variants:
-- **Compliance by category** with pills (good/mid/bad, % inside the pill).
-- **The movers** with "High vol" flag badges + Investigate/Monitor verdicts.
+## Listings
+Hairline tables: caps label heads over one strong rule, hover tint in
+accent-subtle, `.num` mono cells, compliance pills, "High vol" flag pills,
+Investigate/Monitor verdicts.
 
-## MTTR commodities board
-Label / track / mono value rows; fills in accent; one-shot 450ms width
-transition. KPI stubs (heavy top rule): Overall MTTR, Resolved tickets.
+## Time-to-resolve board
+Rounded track bars (accent fill, one-shot 500ms) + KPI stubs on sunken vanilla
+with **ledger-ruled figures**.
 
-## Heatmap ("when trouble arrives")
-7×24 grid, 22px cells, 2px gap; ink scales with count in the edition's
-data hue (oxford by morning, salmon by evening — `--hm-r/g/b` tokens);
-hover scales 1.3 with outline; mono legend ramp; per-cell `title` counts.
+## Heatmap
+22px rounded cells, 4px gap; ink scales with count in the edition's hue
+(ledger blue ↔ periwinkle via `--hm-*`); hover springs to 1.35 with shadow;
+mono legend; per-cell `title` counts.
 
-## The column (AI region)
-Byline strip (quill icon + "prose by the model, figures by the desk") →
-model select + **Write the column** → output with a left rule, serif prose
-with a **drop cap**, mono reasoning receipt (model · task · timestamp).
-Failure modes designed: 503 → deterministic fallback (labelled receipt),
-network error → same; backend error → plain statement. Export row: JSON
-download + copy summary.
+## The columnist
+A single ivory card: byline (quill + "prose by the model, figures by the
+desk") → model select + Write the column → Fraunces prose (no drop cap — the
+serif carries it) → mono reasoning receipt → export row. 503/network → labelled
+deterministic fallback.
 
-## Notices (alerts)
-"Corrections desk" style: icon + text on semantic-subtle background with a
-semantic border. info (Filed.) / warn / err. Parse status region is
-`aria-live` (original contract preserved).
+## Notices
+Soft tinted rows (info/warn/err) with icon; error keeps a visible red border.
 
 ## Quiet state
-Folded-broadsheet line illustration + "Waiting for the morning file" + what
-the front page will print. Returns whenever the dashboard is cleared.
-
-## Colophon (footer)
-Double rule; mono: Truth Guard line, author, source link.
+Dashed vanilla frame, ledger-book line drawing, "Waiting for the morning file."
 
 ## Iconography
-`icons/review-icons.svg` — 14 symbols (file, target, press/chart, quill,
-up/down/flat trends, grid, download, copy, alert, check, sun, moon).
-24px grid · **1.6px squared stroke** — an engraver's line, lighter than
-Dispatch's 1.75 signage stroke and squared where onboard-kit is round.
+`icons/review-icons.svg` — 14 symbols, 24px grid, **1.8 round stroke** (pen
+line). Always `currentColor`, always `aria-hidden`.

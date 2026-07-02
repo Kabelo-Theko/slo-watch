@@ -1,51 +1,36 @@
-# Responsive grid & layout — SLO Watch "The Service-Level Review"
+# Responsive grid & layout — SLO Watch v2 "Vanilla Ledger"
 
 ## Breakpoints
 | Width | Changes |
 |---|---|
-| ≤ 600px | MTTR bar rows compress (90px labels); edition label hides in the top strip |
-| ≤ 640px | Quiet state stacks (illustration above copy) |
-| ≤ 680px | Index board stacks: THE NUMBER above its delta |
-| 1080px | `--page-max` — the page never widens past a readable broadsheet column block |
+| ≤ 600px | MTTR bar labels compress (92px); brand wordmark hides (dot stays); nav floats at 8px |
+| ≤ 640px | Quiet state stacks |
+| ≤ 680px | THE NUMBER board stacks (figure above delta) |
+| 1120px | `--page-max` |
 
-Checked at 360 / 768 / 1280 / 1536.
+Checked at 360 / 768 / 1280.
 
-## Column structure
+## Structure
 ```
-┌ masthead ──────────────────────────────────────────┐
-│ edition · dateline · theme        (mono top strip)  │
-│              THE SERVICE-LEVEL REVIEW               │  ← nameplate
-│         The Data Desk | Methodology                 │  ← section index
-╞═ double rule ═══════════════════════════════════════╡
-│ A1 THE DATA DESK ────────────────────────────────── │
-│ [import panel: paste 2fr | file+sample 1fr]         │
-│ [targets panel: ruled table]                        │
-│ Run the numbers                                     │
-│ B1 THE NUMBER ─ index tile + delta                  │
-│ [P1][P2][P3] tickers (auto-fit ≥200px)              │
-│ B2 listings · B3 commodities · B4 movers            │
-│ B5 heatmap (h-scroll ≥600px inner grid)             │
-│ ── the column (left-ruled serif prose) ──           │
-╞═ double rule ═══════════════════════════════════════╡
-│ colophon                                            │
-└─────────────────────────────────────────────────────┘
+        ( floating pill nav — detached, centered )
+┌ page ────────────────────────────────────────────┐
+│ hero: overline · Fraunces H1 · lede · dateline   │
+│ The Data Desk ─ import panel · targets panel     │
+│ Run the numbers → quiet | dashboard              │
+│   THE NUMBER (ledger-ruled stat + delta)         │
+│   [P1][P2][P3] tickers (auto-fit ≥210px)         │
+│   listings · time-to-resolve · movers · heatmap  │
+│   the columnist card                             │
+│ colophon                                         │
+└───────────────────────────────────────────────────┘
 ```
 
-## Reflow rules
-- **Import row**: `flex: 2 1 340px` paste / `1 1 200px` controls — wraps to
-  stacked under ~600px.
-- **Tickers**: `repeat(auto-fit, minmax(200px, 1fr))` — 3-up → 2-up → 1-up.
-- **Listings**: horizontal scroll inside their panel; rules never break.
-- **Heatmap**: fixed 600px inner grid, scrolls horizontally in its wrap;
-  labels stay attached.
-- **KPI stubs**: `flex: 1 1 170px`, wrap freely.
-- **The column**: prose measure capped at 66ch; drop cap only on the first
-  paragraph.
-
-## Type fluidity
-Nameplate `clamp(1.9 → 3.2rem)`; THE NUMBER `clamp(3 → 5.25rem)`; body fixed
-15px; ledes italic serif 17px. All numerals tabular mono.
+## Reflow
+Import row `2fr/1fr` wraps ~600px; tickers auto-fit 3→2→1; listings scroll
+inside panels; heatmap scrolls in its wrap (600px inner grid); columnist prose
+capped 62ch.
 
 ## Rhythm
-4px grid (83% audited; exceptions are optical 2px rule offsets). Panel
-interiors 20px; desk gaps 32px between deskheads; page padding 32→64px.
+4px grid (91% audited). Panels 24px interior; section heads 64px above /
+20px below; hero 48px top; page bottom 96px. Radii: 10 (fields) / 16 / 22
+(panels) / pill.
